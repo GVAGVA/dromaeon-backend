@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Currency {
+  GOLD
+  SILVER
+  COPPER
+}
+
+model User {
+  id                 String         @id @default(uuid())
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  password           String
+  game_id            String         @unique
+  steam_id           String?
+  discord_id         String?        @unique
+  avatar             String?
+  bio                String?
+  egg_picked_at      DateTime?
+  copper             Int            @default(0)
+  silver             Int            @default(0)
+  gold               Int            @default(0)
+  lifetime_collected Int            @default(0)
+  x                  Int            @default(50)
+  y                  Int            @default(50)
+  is_admin           Boolean        @default(false)
+  is_banned          Boolean        @default(false)
+  policy_check       Boolean        @default(false)
+  Egg                Egg[]
+  Nest               Nest[]
+  Order              Order[]
+  Post               Post[]
+  chatRoomId         String?
+  Message            Message[]
+  UserChatRoom       UserChatRoom[]
+  ChatRoom           ChatRoom?      @relation(fields: [chatRoomId], references: [id])
+  Comment            Comment[]
+  Notification       Notification[]
+}
+
+model Egg {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  x           Int
+  y           Int
+  rotate      Int
+  color       String
+  pattern     String
+  nest        Nest      @relation(fields: [nestId], references: [id])
+  price       Int
+  is_for_sale Boolean   @default(false)
+  owner       User      @relation(fields: [userId], references: [id])
+  userId      String
+  expire_date DateTime?
+  currency    Currency  @default(COPPER)
+  nestId      String
+  Order       Order[]
+}
+
+model Nest {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  Egg       Egg[]
+}
+
+model Order {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  egg       Egg      @relation(fields: [eggId], references: [id])
+  eggId     String
+  buyer     User     @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model Post {
+  id             String       @id @default(uuid())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  title          String
+  content        String
+  views          Int          @default(0)
+  poster         User         @relation(fields: [userId], references: [id])
+  userId         String
+  likes          Int          @default(0)
+  dislikes       Int          @default(0)
+  pinned         Boolean      @default(false)
+  channel        ForumChannel @relation(fields: [forumChannelId], references: [id])
+  forumChannelId String
+  Comment        Comment[]
+}
+
+model ForumChannel {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  title     String   @unique
+  Post      Post[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  poster    User     @relation(fields: [userId], references: [id])
+  userId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    String
+  content   String
+}
+
+model UserChatRoom {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String
+  visibility Boolean  @default(true)
+
+  @@unique([userId, chatRoomId])
+}
+
+model ChatRoom {
+  id           String         @id @default(uuid())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  name         String
+  participants User[]
+  messages     Message[]
+  UserChatRoom UserChatRoom[]
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  content    String
+  sender     User     @relation(fields: [userId], references: [id])
+  userId     String
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String
+  content   String
+  type      String?
+}
