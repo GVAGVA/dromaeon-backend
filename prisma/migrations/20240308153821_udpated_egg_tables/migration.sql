@@ -1,0 +1,17 @@
+-- DropForeignKey
+ALTER TABLE "Egg" DROP CONSTRAINT "Egg_nestId_fkey";
+
+-- DropForeignKey
+ALTER TABLE "Egg" DROP CONSTRAINT "Egg_userId_fkey";
+
+-- AlterTable
+ALTER TABLE "Egg" ALTER COLUMN "rotate" SET DEFAULT 0,
+ALTER COLUMN "price" SET DEFAULT 0,
+ALTER COLUMN "userId" DROP NOT NULL,
+ALTER COLUMN "nestId" DROP NOT NULL;
+
+-- AddForeignKey
+ALTER TABLE "Egg" ADD CONSTRAINT "Egg_nestId_fkey" FOREIGN KEY ("nestId") REFERENCES "Nest"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Egg" ADD CONSTRAINT "Egg_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

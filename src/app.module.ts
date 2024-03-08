@@ -10,6 +10,8 @@ import { PrismaModule } from './prisma/prisma.module'
 import { ForumModule } from './forum/forum.module'
 import { ConfigModule } from '@nestjs/config'
 import { CurrencyModule } from './currency/currency.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { MarketModule } from './market/market.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { CurrencyModule } from './currency/currency.module';
     PrismaModule,
     ForumModule,
     CurrencyModule,
+    InventoryModule,
+    MarketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
