@@ -23,9 +23,8 @@ model User {
   id                 String         @id @default(uuid())
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
-  password           String
   game_id            String         @unique
-  steam_id           String?
+  steam_id           String?        @unique
   discord_id         String?        @unique
   avatar             String?
   bio                String?
