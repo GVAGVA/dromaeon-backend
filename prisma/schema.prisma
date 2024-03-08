@@ -56,17 +56,17 @@ model Egg {
   updatedAt   DateTime  @updatedAt
   x           Int
   y           Int
-  rotate      Int
+  rotate      Int       @default(0)
   color       String
   pattern     String
-  nest        Nest      @relation(fields: [nestId], references: [id])
-  price       Int
+  nest        Nest?     @relation(fields: [nestId], references: [id])
+  price       Int       @default(0)
   is_for_sale Boolean   @default(false)
-  owner       User      @relation(fields: [userId], references: [id])
-  userId      String
+  owner       User?     @relation(fields: [userId], references: [id])
+  userId      String?
   expire_date DateTime?
   currency    Currency  @default(COPPER)
-  nestId      String
+  nestId      String?
   Order       Order[]
 }
 

@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { Currency } from '@prisma/client'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { ExchangeCurrency } from './dto/exchangeDto'
+import { TransferMoneyDto } from './dto/transferMoneyDto'
 
 @Injectable()
 export class CurrencyService {
@@ -32,6 +33,7 @@ export class CurrencyService {
       return amount * this.goldToSilver
   }
 
+  // exchange currencies
   async exchangeCurrency(
     userId: string,
     { fromCurrency, toCurrency, amount }: ExchangeCurrency,
@@ -51,5 +53,40 @@ export class CurrencyService {
         },
       },
     })
+  }
+
+  // transfer money between two users
+  async transferMooney({ from, to, currency, amount }: TransferMoneyDto) {
+    // take out money from one acc
+    await this.takeOutMoney(from, currency, amount)
+    // put money to other's acc
+    await this.putMoney(to, currency, amount)
+  }
+
+  // give money to a user's acc
+  async putMoney(userId: string, currency: Currency, amount: number) {
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        [this.getCurrencyField(currency)]: { increment: Number(amount) },
+      },
+    })
+  }
+
+  // take out money from a user's acc
+  async takeOutMoney(userId: string, currency: Currency, amount: number) {
+    try {
+      return await this.prisma.user.update({
+        where: {
+          id: userId,
+          [this.getCurrencyField(currency)]: { gte: Number(amount) },
+        },
+        data: {
+          [this.getCurrencyField(currency)]: { decrement: Number(amount) },
+        },
+      })
+    } catch (err) {
+      throw new BadRequestException(`${currency} isn't enought!`)
+    }
   }
 }

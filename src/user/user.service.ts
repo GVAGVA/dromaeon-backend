@@ -7,6 +7,8 @@ import { UpdateUserDto } from './dto/updateUserDto'
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  private pageSize: number = 4
+
   // find user by game_id
   async findOne(gameId: string): Promise<User | undefined> {
     return this.prisma.user.findUnique({ where: { game_id: gameId } })
@@ -51,6 +53,20 @@ export class UserService {
         bio: dto.bio,
         avatar: dto.avatar,
       },
+    })
+  }
+
+  // delete account
+  async deleteAccount(id: string) {
+    return await this.prisma.user.delete({ where: { id } })
+  }
+
+  // get user accounts
+  async searchProfiles(page: number, search: string) {
+    return await this.prisma.user.findMany({
+      where: { game_id: { contains: search } },
+      skip: this.pageSize * (page - 1),
+      take: this.pageSize,
     })
   }
 }
