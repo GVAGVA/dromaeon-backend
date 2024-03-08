@@ -1,15 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { User } from '@prisma/client'
+import { Currency, User } from '@prisma/client'
+import { UpdateUserDto } from './dto/updateUserDto'
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  // find user by game_id
   async findOne(gameId: string): Promise<User | undefined> {
     return this.prisma.user.findUnique({ where: { game_id: gameId } })
   }
 
+  // find user by id
   async findOneById(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } })
     if (!user) {
@@ -18,6 +21,7 @@ export class UserService {
     return user
   }
 
+  // connect accounts from discord to steam and vice versa
   async connectAccount(original: string, newAccount: string) {
     const user = await this.prisma.user.findUnique({ where: { id: original } })
     if (!user) {
@@ -36,5 +40,17 @@ export class UserService {
         data: { steam_id: deleted.steam_id },
       })
     }
+  }
+
+  // update account info
+  async updateAccount(userId: string, dto: UpdateUserDto) {
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        game_id: dto.game_id,
+        bio: dto.bio,
+        avatar: dto.avatar,
+      },
+    })
   }
 }

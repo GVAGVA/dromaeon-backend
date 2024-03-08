@@ -9,6 +9,7 @@ import { NotificationModule } from './notification/notification.module'
 import { PrismaModule } from './prisma/prisma.module'
 import { ForumModule } from './forum/forum.module'
 import { ConfigModule } from '@nestjs/config'
+import { CurrencyModule } from './currency/currency.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ConfigModule } from '@nestjs/config'
     NotificationModule,
     PrismaModule,
     ForumModule,
+    CurrencyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
