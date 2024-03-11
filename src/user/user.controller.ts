@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
+  Param,
   Post,
   Query,
   Request,
@@ -12,7 +13,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard'
 import { CurrencyService } from 'src/currency/currency.service'
 import { ExchangeCurrency } from 'src/currency/dto/exchangeDto'
 import { UserService } from './user.service'
-import { InventoryService } from 'src/inventory/inventory.service'
 
 @Controller('user')
 export class UserController {
@@ -30,6 +30,11 @@ export class UserController {
       .catch((err) => {
         throw new InternalServerErrorException(err.message)
       })
+  }
+
+  @Get('profile/:id')
+  async getProfile(@Param('id') id: string) {
+    return await this.userService.findOneById(id)
   }
 
   @Get('profiles')
