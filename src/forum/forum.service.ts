@@ -36,24 +36,45 @@ export class ForumService {
     { page, pageSize, sort, search }: SearchParamType,
     category: string,
   ) {
+    let count = 0
+    let posts = []
+
     if (category) {
-      return await this.prisma.post.findMany({
+      count = await this.prisma.post.count({
         where: { channel: { id: category }, title: { contains: search || '' } },
-        select: {
+      })
+
+      posts = await this.prisma.post.findMany({
+        where: { channel: { id: category }, title: { contains: search || '' } },
+        include: {
           poster: { select: { id: true, avatar: true } },
         },
         skip: (page - 1) * pageSize,
         take: pageSize,
       })
+
+      return { count, posts }
     }
 
-    return await this.prisma.post.findMany({
+    count = await this.prisma.post.count({
       where: { title: { contains: search || '' } },
-      select: {
+    })
+    posts = await this.prisma.post.findMany({
+      where: { title: { contains: search || '' } },
+      include: {
         poster: { select: { id: true, avatar: true } },
       },
       skip: (page - 1) * pageSize,
       take: pageSize,
+    })
+
+    return { count, posts }
+  }
+
+  async getPost(id: string) {
+    return await this.prisma.post.findUnique({
+      where: { id },
+      include: { poster: true, Comment: { include: { poster: true } } },
     })
   }
 
@@ -62,6 +83,7 @@ export class ForumService {
 
     return await this.prisma.post.create({
       data: { title, content, forumChannelId, userId },
+      include: { poster: true },
     })
   }
 

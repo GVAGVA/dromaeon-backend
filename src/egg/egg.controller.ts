@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   InternalServerErrorException,
   Param,
   Post,
@@ -15,6 +16,17 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard'
 @Controller('egg')
 export class EggController {
   constructor(private eggService: EggService) {}
+
+  // fetch eggs uncovered for explorer map
+  @Get('uncovered')
+  async getEggsUncovered() {
+    return await this.eggService
+      .getEggsUncovered()
+      .then((eggs) => eggs)
+      .catch((err) => {
+        throw new InternalServerErrorException(err.message)
+      })
+  }
 
   // create bulk eggs
   @Post('bulk')

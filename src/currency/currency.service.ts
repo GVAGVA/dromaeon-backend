@@ -52,6 +52,7 @@ export class CurrencyService {
           }),
         },
       },
+      select: { copper: true, silver: true, gold: true },
     })
   }
 
@@ -88,5 +89,13 @@ export class CurrencyService {
     } catch (err) {
       throw new BadRequestException(`${currency} isn't enought!`)
     }
+  }
+
+  // get user's money
+  async getUserMoney(userId: string) {
+    return await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { copper: true, silver: true, gold: true },
+    })
   }
 }
