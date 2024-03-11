@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { CurrencyService } from 'src/currency/currency.service'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { EggTransactionDto } from './dto/market.dto'
@@ -14,7 +14,7 @@ export class MarketService {
 
   // get eggs in market
   async findAllForSale({ page, pageSize }: { page: number; pageSize: number }) {
-    await this.prisma.egg.findMany({
+    return await this.prisma.egg.findMany({
       where: { is_for_sale: true },
       skip: pageSize * (page - 1),
       take: pageSize,
@@ -22,14 +22,16 @@ export class MarketService {
   }
 
   // make egg transaction
-  async eggTransaction({
-    from,
-    to,
-    currency,
-    amount,
-    eggId,
-  }: EggTransactionDto) {
-    await this.currencyService.transferMooney({ from, to, currency, amount })
+  async eggTransaction({ eggId, to }: EggTransactionDto) {
+    const egg = await this.prisma.egg.findUnique({ where: { id: eggId } })
+    if (!egg) throw new NotFoundException()
+
+    await this.currencyService.transferMooney({
+      from: egg.userId,
+      to,
+      currency: egg.currency,
+      amount: egg.price,
+    })
     await this.eggService.updateEgg({ id: eggId, userId: to, nestId: null })
   }
 }

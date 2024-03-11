@@ -9,6 +9,7 @@ import {
   Req,
   Request,
   UseGuards,
+  InternalServerErrorException,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { AuthGuard } from '@nestjs/passport'
@@ -66,5 +67,12 @@ export class AuthController {
 
   @Get('connect/:id')
   @UseGuards(JwtAuthGuard)
-  async connectProfile(@Param('id') id: string) {}
+  async connectProfile(@Param('id') id: string, @Request() req) {
+    return await this.userService
+      .connectAccount(req.user.id, id)
+      .then(() => ({ message: 'success' }))
+      .catch((err) => {
+        throw new InternalServerErrorException(err.message)
+      })
+  }
 }

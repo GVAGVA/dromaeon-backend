@@ -28,19 +28,20 @@ export class UserService {
 
   // connect accounts from discord to steam and vice versa
   async connectAccount(original: string, newAccount: string) {
-    const user = await this.prisma.user.findUnique({ where: { id: original } })
-    if (!user) {
-      throw new NotFoundException()
-    }
+    const originalAcc = await this.prisma.user.findUnique({
+      where: { id: original },
+    })
+    if (!originalAcc) return { message: 'failed' }
 
     const deleted = await this.prisma.user.delete({ where: { id: newAccount } })
-    if (!user.discord_id) {
-      return await this.prisma.user.update({
+
+    if (!originalAcc.discord_id) {
+      await this.prisma.user.update({
         where: { id: original },
         data: { discord_id: deleted.discord_id },
       })
-    } else if (!user.steam_id) {
-      return await this.prisma.user.update({
+    } else if (!originalAcc.steam_id) {
+      await this.prisma.user.update({
         where: { id: original },
         data: { steam_id: deleted.steam_id },
       })
@@ -67,11 +68,15 @@ export class UserService {
 
   // get user accounts
   async searchProfiles(page: number, search: string) {
-    return await this.prisma.user.findMany({
+    const count = await this.prisma.user.count({
+      where: { game_id: { contains: search, mode: 'insensitive' } },
+    })
+    const users = await this.prisma.user.findMany({
       where: { game_id: { contains: search, mode: 'insensitive' } },
       skip: this.pageSize * (page - 1),
       take: this.pageSize,
       include: { Egg: true },
     })
+    return { count, users }
   }
 }

@@ -34,8 +34,7 @@ export class EggService {
   }
 
   async removeEgg(eggId: string) {
-    await this.prisma.egg.delete({ where: { id: eggId } })
-    return eggId
+    return await this.prisma.egg.delete({ where: { id: eggId } })
   }
 
   async updateEggPrice(eggid: string, price: number, currency: Currency) {
