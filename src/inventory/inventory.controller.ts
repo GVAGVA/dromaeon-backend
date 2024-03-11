@@ -30,8 +30,8 @@ export class InventoryController {
   }
 
   // create nest
-  @Get('nest')
-  async addNest(@Request() req, @Query('name') name: string) {
+  @Post('nest')
+  async addNest(@Request() req, @Body() { name }: { name: string }) {
     return this.inventoryService
       .addNest(req.user.id, name)
       .then((nest) => nest)
@@ -41,8 +41,11 @@ export class InventoryController {
   }
 
   // update nest using ID
-  @Get('update/:id')
-  async updateNest(@Param('id') id: string, @Query('name') name: string) {
+  @Post('nest/:id')
+  async updateNest(
+    @Param('id') id: string,
+    @Body() { name }: { name: string },
+  ) {
     return this.inventoryService
       .updateNest(id, name)
       .then((nest) => nest)

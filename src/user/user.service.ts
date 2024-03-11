@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '../prisma/prisma.service'
-import { Currency, User } from '@prisma/client'
+import { User } from '@prisma/client'
 import { UpdateUserDto } from './dto/updateUserDto'
 
 @Injectable()
@@ -16,7 +16,10 @@ export class UserService {
 
   // find user by id
   async findOneById(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } })
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: { Egg: true },
+    })
     if (!user) {
       throw new NotFoundException()
     }
@@ -48,6 +51,7 @@ export class UserService {
   async updateAccount(userId: string, dto: UpdateUserDto) {
     return await this.prisma.user.update({
       where: { id: userId },
+      include: { Egg: true },
       data: {
         game_id: dto.game_id,
         bio: dto.bio,
@@ -64,9 +68,10 @@ export class UserService {
   // get user accounts
   async searchProfiles(page: number, search: string) {
     return await this.prisma.user.findMany({
-      where: { game_id: { contains: search } },
+      where: { game_id: { contains: search, mode: 'insensitive' } },
       skip: this.pageSize * (page - 1),
       take: this.pageSize,
+      include: { Egg: true },
     })
   }
 }

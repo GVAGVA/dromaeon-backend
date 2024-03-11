@@ -1,6 +1,8 @@
 import {
+  Body,
   Controller,
   Get,
+  Post,
   Param,
   Query,
   Redirect,
@@ -12,6 +14,7 @@ import { ConfigService } from '@nestjs/config'
 import { AuthGuard } from '@nestjs/passport'
 import { JwtAuthGuard } from './guards/jwt.guard'
 import { UserService } from 'src/user/user.service'
+import { UpdateUserDto } from '../user/dto/updateUserDto'
 
 const redirectUrl = process.env.FRONT_APP_URL || ''
 
@@ -53,6 +56,12 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async getProfile(@Request() req) {
     return await this.userService.findOneById(req.user.id)
+  }
+
+  @Post('profile')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(@Request() req, @Body() dto: UpdateUserDto) {
+    return await this.userService.updateAccount(req.user.id, dto)
   }
 
   @Get('connect/:id')

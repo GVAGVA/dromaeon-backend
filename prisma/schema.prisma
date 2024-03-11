@@ -61,11 +61,11 @@ model Egg {
   pattern     String
   nest        Nest?     @relation(fields: [nestId], references: [id])
   price       Int       @default(0)
+  currency    Currency  @default(COPPER)
   is_for_sale Boolean   @default(false)
   owner       User?     @relation(fields: [userId], references: [id])
   userId      String?
   expire_date DateTime?
-  currency    Currency  @default(COPPER)
   nestId      String?
   Order       Order[]
 }
@@ -139,9 +139,11 @@ model ChatRoom {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   name         String
+  lastMessage  String
   participants User[]
   messages     Message[]
   UserChatRoom UserChatRoom[]
+  isPrivate    Boolean
 }
 
 model Message {

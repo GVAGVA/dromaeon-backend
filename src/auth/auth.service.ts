@@ -59,6 +59,7 @@ export class AuthService {
       id: user.id,
       game_id: user.game_id,
       avatar: user.avatar,
+      is_admin: user.is_admin,
     })
   }
 }
