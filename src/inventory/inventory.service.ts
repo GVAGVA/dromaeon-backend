@@ -49,17 +49,6 @@ export class InventoryService {
     })
   }
 
-  async takeEggToMarket(eggId: string, currency: Currency, price: number) {
-    return await this.prisma.egg.update({
-      where: { id: eggId },
-      data: {
-        is_for_sale: true,
-        price,
-        currency,
-      },
-    })
-  }
-
   async cancelEggSale(eggId: string) {
     return await this.prisma.egg.update({
       where: { id: eggId },

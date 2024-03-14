@@ -12,11 +12,15 @@ import {
 import { InventoryService } from './inventory.service'
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard'
 import { Currency } from '@prisma/client'
+import { MarketService } from 'src/market/market.service'
 
 @Controller('inventory')
 @UseGuards(JwtAuthGuard)
 export class InventoryController {
-  constructor(private inventoryService: InventoryService) {}
+  constructor(
+    private inventoryService: InventoryService,
+    private marketService: MarketService,
+  ) {}
 
   // get all nests for a logged in user
   @Get('nests')
@@ -71,7 +75,7 @@ export class InventoryController {
     @Param('id') id: string,
     @Body() dto: { currency: Currency; price: number },
   ) {
-    return this.inventoryService
+    return this.marketService
       .takeEggToMarket(id, dto.currency, dto.price)
       .then((egg) => egg)
       .catch((err) => {

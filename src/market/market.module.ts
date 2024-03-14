@@ -8,5 +8,6 @@ import { EggModule } from 'src/egg/egg.module'
   providers: [MarketService],
   controllers: [MarketController],
   imports: [CurrencyModule, EggModule],
+  exports: [MarketService],
 })
 export class MarketModule {}
