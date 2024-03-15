@@ -139,7 +139,6 @@ model ChatRoom {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   name         String
-  lastMessage  String
   participants User[]
   messages     Message[]
   UserChatRoom UserChatRoom[]

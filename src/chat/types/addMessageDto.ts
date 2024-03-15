@@ -1,11 +1,11 @@
 export interface AddMessageDto {
-  userId: string
+  userId?: string
   chatRoomId: string
   content: string
 }
 
 export interface SendMessageDto {
-  from: string
+  from?: string
   to: string
   content: string
 }

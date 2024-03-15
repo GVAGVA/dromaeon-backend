@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { AddMessageDto, SendMessageDto } from './types/addMessageDto'
+import { AppGateway } from 'src/socket/gateways/app'
+import { Message } from '@prisma/client'
+import { chatRoomSelection } from './chat.selection'
 
 @Injectable()
 export class ChatService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly appGateway: AppGateway,
+  ) {}
 
   // send message
   async sendMessage(dto: SendMessageDto) {
@@ -39,18 +45,17 @@ export class ChatService {
       data: { visibility: true },
     })
 
-    await this.prisma.chatRoom.update({
-      where: { id: dto.chatRoomId },
-      data: { lastMessage: dto.content },
-    })
-
-    return await this.prisma.message.create({
+    const message = await this.prisma.message.create({
       data: {
         userId: dto.userId,
         chatRoomId: dto.chatRoomId,
         content: dto.content,
       },
     })
+    // send new message event to the user
+    this.sendNewMessageEvent(message)
+
+    return message
   }
 
   // add chat room
@@ -58,7 +63,6 @@ export class ChatService {
     const chatRoom = await this.prisma.chatRoom.create({
       data: {
         name: `${dto.from}-${dto.to}`,
-        lastMessage: dto.content,
         isPrivate: true,
       },
     })
@@ -73,15 +77,45 @@ export class ChatService {
     return chatRoom
   }
 
-  // hide chat room
-  async hideUserChatRoom(roomId: string) {
-    return await this.prisma.userChatRoom.update({
-      where: { id: roomId },
-      data: { visibility: false },
+  // get a chatroom
+  async getChatRoomById(userId: string, roomId: string) {
+    const data = await this.prisma.userChatRoom.findFirst({
+      where: { chatRoomId: roomId },
+      include: {
+        chatRoom: {
+          select: {
+            id: true,
+            updatedAt: true,
+            name: true,
+            participants: { select: { id: true, avatar: true, game_id: true } },
+            UserChatRoom: {
+              where: { userId: { not: userId } },
+              select: {
+                user: { select: { id: true, game_id: true, avatar: true } },
+              },
+            },
+            messages: {
+              select: {
+                content: true,
+              },
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
+          },
+        },
+      },
     })
+
+    return {
+      id: data.id,
+      chatRoomId: data.chatRoomId,
+      updatedAt: data.chatRoom.updatedAt,
+      user: data.chatRoom.UserChatRoom[0].user,
+      lastMessage: data.chatRoom.messages[0].content,
+    }
   }
 
-  // get all servers
+  // get all chatroom
   async getAllUserChatRooms(userId: string) {
     const data = await this.prisma.userChatRoom.findMany({
       where: { userId, visibility: true },
@@ -91,8 +125,20 @@ export class ChatService {
             id: true,
             updatedAt: true,
             name: true,
-            lastMessage: true,
             participants: { select: { id: true, avatar: true, game_id: true } },
+            UserChatRoom: {
+              where: { userId: { not: userId } },
+              select: {
+                user: { select: { id: true, game_id: true, avatar: true } },
+              },
+            },
+            messages: {
+              select: {
+                content: true,
+              },
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
           },
         },
       },
@@ -107,19 +153,50 @@ export class ChatService {
       id: item.id,
       chatRoomId: item.chatRoomId,
       updatedAt: item.chatRoom.updatedAt,
-      users: item.chatRoom.participants,
-      lastMessage: item.chatRoom.lastMessage,
+      user: item.chatRoom.UserChatRoom[0].user,
+      lastMessage: item.chatRoom.messages[0].content,
     }))
   }
 
   // get all messages in the server
-  async getAllMessages(roomId: string) {
-    return await this.prisma.message.findMany({
+  async getAllMessagesByRoomId(roomId: string) {
+    const messages = await this.prisma.message.findMany({
       where: { chatRoomId: roomId },
       orderBy: {
         createdAt: 'desc',
       },
       take: 50,
+    })
+
+    return messages.reverse()
+  }
+
+  // send new message event
+  async sendNewMessageEvent(message: Message) {
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: { not: message.userId },
+        UserChatRoom: { some: { chatRoom: { id: message.chatRoomId } } },
+      },
+    })
+    users.forEach((item) => {
+      this.appGateway.handleNewMessage({ userId: item.id, message })
+    })
+  }
+
+  // hide chat room
+  async hideUserChatRoom(roomId: string) {
+    return await this.prisma.userChatRoom.updateMany({
+      where: { chatRoomId: roomId },
+      data: { visibility: false },
+    })
+  }
+
+  // open chat room
+  async openUserChatRoom(roomId: string) {
+    return await this.prisma.userChatRoom.updateMany({
+      where: { chatRoomId: roomId },
+      data: { visibility: true },
     })
   }
 }

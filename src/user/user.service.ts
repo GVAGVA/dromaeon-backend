@@ -79,4 +79,45 @@ export class UserService {
     })
     return { count, users }
   }
+
+  // get user accounts with my connection
+  async searchProfilesWithCons(page: number, search: string, userId: string) {
+    const connections = await this.prisma.chatRoom.findMany({
+      where: { UserChatRoom: { some: { userId } }, isPrivate: true },
+    })
+
+    const ids = connections.map((item) => item.id)
+
+    const count = await this.prisma.user.count({
+      where: { game_id: { contains: search, mode: 'insensitive' } },
+    })
+    const users = await this.prisma.user.findMany({
+      where: { game_id: { contains: search, mode: 'insensitive' } },
+      skip: this.pageSize * (page - 1),
+      take: this.pageSize,
+      include: {
+        Egg: { select: { id: true } },
+        UserChatRoom: {
+          where: { chatRoom: { id: { in: ids } } },
+        },
+      },
+    })
+    return { count, users }
+  }
+
+  // check if has connection
+  async connectedChatServer(userId: string, loggedInUser: string) {
+    const connections = await this.prisma.chatRoom.findMany({
+      where: {
+        UserChatRoom: { some: { userId: loggedInUser } },
+        isPrivate: true,
+      },
+    })
+
+    const ids = connections.map((item) => item.id)
+
+    return await this.prisma.userChatRoom.findMany({
+      where: { userId, chatRoom: { id: { in: ids } } },
+    })
+  }
 }

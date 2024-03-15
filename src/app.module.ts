@@ -9,9 +9,10 @@ import { NotificationModule } from './notification/notification.module'
 import { PrismaModule } from './prisma/prisma.module'
 import { ForumModule } from './forum/forum.module'
 import { ConfigModule } from '@nestjs/config'
-import { CurrencyModule } from './currency/currency.module';
-import { InventoryModule } from './inventory/inventory.module';
-import { MarketModule } from './market/market.module';
+import { CurrencyModule } from './currency/currency.module'
+import { InventoryModule } from './inventory/inventory.module'
+import { MarketModule } from './market/market.module'
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { MarketModule } from './market/market.module';
     CurrencyModule,
     InventoryModule,
     MarketModule,
+    SocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
