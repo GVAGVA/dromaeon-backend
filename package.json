@@ -26,6 +26,8 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-socket.io": "^10.3.3",
+    "@nestjs/websockets": "^10.3.3",
     "@prisma/client": "^5.10.2",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
@@ -35,7 +37,8 @@
     "passport-local": "^1.0.0",
     "passport-steam": "^1.0.18",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "socket.io": "^4.7.4"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

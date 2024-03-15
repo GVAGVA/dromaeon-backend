@@ -37,12 +37,32 @@ export class UserController {
     return await this.userService.findOneById(id)
   }
 
+  @Get('private-chat/:id')
+  @UseGuards(JwtAuthGuard)
+  async getConnectedPrivateChatServer(@Param('id') id: string, @Request() req) {
+    return await this.userService.connectedChatServer(id, req.user.id)
+  }
+
   @Get('profiles')
   async searchProfiles(
     @Query('search') search: string,
     @Query('page') page: number,
   ) {
     return this.userService.searchProfiles(Number(page), search)
+  }
+
+  @Get('profiles-cons')
+  @UseGuards(JwtAuthGuard)
+  async searchProfilesWithCons(
+    @Query('search') search: string,
+    @Query('page') page: number,
+    @Request() req,
+  ) {
+    return this.userService.searchProfilesWithCons(
+      Number(page),
+      search,
+      req.user.id,
+    )
   }
 
   @Get('currency')
