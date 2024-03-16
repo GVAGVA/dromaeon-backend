@@ -164,3 +164,9 @@ model Notification {
   content   String
   type      String?
 }
+
+model AdminSetting {
+  id             String @id @default(uuid())
+  maxEggs        Int    @default(100)
+  pickupCooldown Int    @default(3600)
+}
