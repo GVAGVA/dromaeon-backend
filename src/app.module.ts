@@ -13,6 +13,7 @@ import { CurrencyModule } from './currency/currency.module'
 import { InventoryModule } from './inventory/inventory.module'
 import { MarketModule } from './market/market.module'
 import { SocketModule } from './socket/socket.module';
+import { ExploreModule } from './explore/explore.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SocketModule } from './socket/socket.module';
     InventoryModule,
     MarketModule,
     SocketModule,
+    ExploreModule,
   ],
   controllers: [AppController],
   providers: [AppService],
