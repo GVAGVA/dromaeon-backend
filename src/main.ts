@@ -2,10 +2,12 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import * as dotenv from 'dotenv'
 
+const port = process.env.PORT || 8080
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.enableCors()
-  await app.listen(3000)
+  await app.listen(port)
   dotenv.config()
 }
 bootstrap()
