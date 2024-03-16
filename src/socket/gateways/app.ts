@@ -12,9 +12,9 @@ export const JOIN = 'JOIN'
 export const GET_MESSAGE = 'GET_MESSAGE'
 export const GET_NOTIFICATION = 'GET_NOTIFICATION'
 
-const SOCKET_PORT = process.env.SOCKET_PORT
+// const SOCKET_PORT = process.env.SOCKET_PORT
 
-@WebSocketGateway({ namespace: '/app', cors: '*:*', port: SOCKET_PORT })
+@WebSocketGateway({ namespace: '/app', cors: '*:*' })
 export class AppGateway {
   @WebSocketServer() server: Server
 

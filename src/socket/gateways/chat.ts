@@ -6,8 +6,8 @@ import {
 } from '@nestjs/websockets'
 import { Server } from 'http'
 
-const SOCKET_PORT = process.env.SOCKET_PORT
-@WebSocketGateway({ namespace: '/chat', cors: '*:*', port: SOCKET_PORT })
+// const SOCKET_PORT = process.env.SOCKET_PORT
+@WebSocketGateway({ namespace: '/chat', cors: '*:*' })
 export class ChatGateway {
   @WebSocketServer() server: Server
 
