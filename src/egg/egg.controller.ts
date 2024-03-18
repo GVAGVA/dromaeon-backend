@@ -2,57 +2,18 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   InternalServerErrorException,
   Param,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common'
 import { EggService } from './egg.service'
-import { Currency, Egg } from '@prisma/client'
+import { Currency } from '@prisma/client'
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard'
 
 @Controller('egg')
 export class EggController {
   constructor(private eggService: EggService) {}
-
-  // fetch eggs uncovered for explorer map
-  @Get('uncovered')
-  async getEggsUncovered() {
-    return await this.eggService
-      .getEggsUncovered()
-      .then((eggs) => eggs)
-      .catch((err) => {
-        throw new InternalServerErrorException(err.message)
-      })
-  }
-
-  // create bulk eggs
-  @Post('bulk')
-  async createEggs(@Body() dto: Egg[]) {
-    return await this.eggService
-      .createEggs(dto)
-      .then((eggs) => eggs)
-      .catch((err) => {
-        throw new InternalServerErrorException(err.message)
-      })
-  }
-
-  // pick up an egg
-  @Post('pick-up')
-  @UseGuards(JwtAuthGuard)
-  async pickUpEgg(
-    @Request() req,
-    @Body() dto: { eggId: string; nestId: string },
-  ) {
-    return await this.eggService
-      .pickUpEgg(req.user.id, dto.eggId, dto.nestId)
-      .then((egg) => egg)
-      .catch((err) => {
-        throw new InternalServerErrorException(err.message)
-      })
-  }
 
   // change egg price
   @Post('price/:id')
