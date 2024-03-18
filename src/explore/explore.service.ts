@@ -36,8 +36,12 @@ export class ExploreService {
 
   // create eggs on the map
   async createEggs(eggs: Egg[]) {
-    const data = await this.prisma.egg.createMany({
+    const { count } = await this.prisma.egg.createMany({
       data: eggs,
+    })
+    const data = await this.prisma.egg.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: count,
     })
 
     this.sendEvent({ type: 'BULK', data })
