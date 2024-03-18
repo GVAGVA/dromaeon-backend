@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { UpateAdminSettingDto } from './dto/updateAdminSetting.dto'
+import { UpdateAdminSettingDto } from './dto/updateAdminSetting.dto'
 import { Observable, Subject } from 'rxjs'
 import { ExploreEventDto } from './dto/exploreEvent.dto'
+import { Egg } from '@prisma/client'
 
 @Injectable()
 export class ExploreService {
@@ -20,11 +21,41 @@ export class ExploreService {
     return this.exploreEvents.asObservable()
   }
 
+  // get admin settings
+  async getAdminSettings() {
+    return await this.prisma.adminSetting.findFirst()
+  }
+
   // update admin settings
-  async updateAdminSettings(dto: UpateAdminSettingDto) {
+  async updateAdminSettings(dto: UpdateAdminSettingDto) {
     return await this.prisma.adminSetting.update({
       where: { id: dto.id },
       data: { ...dto },
+    })
+  }
+
+  // create eggs on the map
+  async createEggs(eggs: Egg[]) {
+    const data = await this.prisma.egg.createMany({
+      data: eggs,
+    })
+
+    this.sendEvent({ type: 'BULK', data })
+  }
+
+  async getEggsUncovered() {
+    return await this.prisma.egg.findMany({ where: { owner: null } })
+  }
+
+  async pickUpEgg(userId: string, eggId: string, nestId: string) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { lifetime_collected: { increment: 1 } },
+    })
+
+    return await this.prisma.egg.update({
+      where: { id: eggId },
+      data: { userId, nestId },
     })
   }
 }

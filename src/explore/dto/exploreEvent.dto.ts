@@ -1,4 +1,4 @@
 export interface ExploreEventDto {
-  type: 'CREATED' | 'PICKUP'
+  type: 'BULK' | 'PICKUP'
   data: any
 }
