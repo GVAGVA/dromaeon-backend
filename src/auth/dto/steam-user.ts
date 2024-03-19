@@ -2,6 +2,7 @@ export interface SteamUser {
   id: string
   avatar: string
   displayName: string
+  username: string
 }
 
 // {

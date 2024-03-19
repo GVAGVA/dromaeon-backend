@@ -23,10 +23,13 @@ export class SteamStrategy extends PassportStrategy<any>(Strategy, 'steam') {
     profile: any,
     done: (err: any, val: any) => void,
   ): Promise<any> {
+    console.log(profile)
+
     const jwtToken = this.authService.handleSteamLogin({
       id: profile.id,
       displayName: profile.displayName,
       avatar: profile.photos[0].value,
+      username: profile.displayName,
     })
 
     return done(null, jwtToken)

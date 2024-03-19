@@ -2,6 +2,7 @@ export interface DiscordUser {
   id: string
   username: string
   avatar: string
+  displayName: string
 }
 // {
 //   id: '1192842476931784786',

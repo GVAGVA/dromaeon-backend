@@ -43,6 +43,12 @@ export class UserController {
     return await this.userService.connectedChatServer(id, req.user.id)
   }
 
+  @Get('check-username/:username')
+  @UseGuards(JwtAuthGuard)
+  async checkUsername(@Request() req, @Param('username') username: string) {
+    return await this.userService.checkUsernameUnique(username, req.user.id)
+  }
+
   @Get('profiles')
   async searchProfiles(
     @Query('search') search: string,
