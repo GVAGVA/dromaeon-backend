@@ -128,4 +128,20 @@ export class UserService {
       where: { userId, chatRoom: { id: { in: ids } } },
     })
   }
+
+  // check if user agreed to terms and rules
+  async checkIfAgreed(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    })
+    if (!user) throw new NotFoundException()
+    return user.policy_check
+  }
+
+  async agreedToPolicy(userId: string) {
+    return await this.prisma.user.update({
+      where: { id: userId },
+      data: { policy_check: true },
+    })
+  }
 }
