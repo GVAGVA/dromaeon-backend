@@ -27,6 +27,7 @@ export class AuthService {
         game_id: dto.username,
         discord_id: dto.id,
         avatar: dto.avatar,
+        displayName: dto.displayName,
       },
     })
 
@@ -48,6 +49,7 @@ export class AuthService {
         game_id: dto.displayName,
         steam_id: dto.id,
         avatar: dto.avatar,
+        displayName: dto.displayName,
       },
     })
 

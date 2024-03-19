@@ -61,6 +61,13 @@ export class UserService {
     })
   }
 
+  // check if username is unique
+  async checkUsernameUnique(username: string, userId: string) {
+    return await this.prisma.user.findFirst({
+      where: { game_id: username, id: { not: userId } },
+    })
+  }
+
   // delete account
   async deleteAccount(id: string) {
     return await this.prisma.user.delete({ where: { id } })

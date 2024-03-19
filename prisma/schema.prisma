@@ -26,6 +26,7 @@ model User {
   game_id            String         @unique
   steam_id           String?        @unique
   discord_id         String?        @unique
+  displayName        String
   avatar             String?
   bio                String?
   egg_picked_at      DateTime?
