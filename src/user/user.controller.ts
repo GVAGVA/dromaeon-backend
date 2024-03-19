@@ -76,4 +76,17 @@ export class UserController {
   async getUserMoney(@Request() req) {
     return this.currencyService.getUserMoney(req.user.id)
   }
+
+  // policy check
+  @Get('policy-check')
+  @UseGuards(JwtAuthGuard)
+  async userPolicyCheck(@Request() req) {
+    return this.userService.checkIfAgreed(req.user.id)
+  }
+
+  @Get('policy-agree')
+  @UseGuards(JwtAuthGuard)
+  async agreeToPolicy(@Request() req) {
+    return this.userService.agreedToPolicy(req.user.id)
+  }
 }

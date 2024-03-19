@@ -10,6 +10,7 @@ import {
   Request,
   UseGuards,
   InternalServerErrorException,
+  Delete,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { AuthGuard } from '@nestjs/passport'
@@ -74,5 +75,12 @@ export class AuthController {
       .catch((err) => {
         throw new InternalServerErrorException(err.message)
       })
+  }
+
+  // delete account
+  @Delete('delete')
+  @UseGuards(JwtAuthGuard)
+  async deleteAccount(@Request() req) {
+    return await this.userService.deleteAccount(req.user.id)
   }
 }
