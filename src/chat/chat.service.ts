@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { AddMessageDto, SendMessageDto } from './types/addMessageDto'
-import { AppGateway } from 'src/socket/gateways/app'
+import { AppGateway } from 'src/socket/gateways/app/app'
 import { Message } from '@prisma/client'
 import { chatRoomSelection } from './chat.selection'
 

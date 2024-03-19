@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { ChatGateway } from './gateways/chat'
-import { AppGateway } from './gateways/app'
+import { AppGateway } from './gateways/app/app'
 import { GameGateway } from './gateways/game/game'
 
 @Module({
