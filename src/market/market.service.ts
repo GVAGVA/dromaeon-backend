@@ -6,13 +6,15 @@ import { EggService } from 'src/egg/egg.service'
 import { Observable, Subject } from 'rxjs'
 import { MarketEventDto } from './dto/market-event.dto'
 import { Currency } from '@prisma/client'
+import { AppGateway } from 'src/socket/gateways/app/app'
 
 @Injectable()
 export class MarketService {
   constructor(
-    private prisma: PrismaService,
-    private currencyService: CurrencyService,
-    private eggService: EggService,
+    private readonly prisma: PrismaService,
+    private readonly currencyService: CurrencyService,
+    private readonly eggService: EggService,
+    private readonly appEvent: AppGateway,
   ) {}
 
   // market event
@@ -72,6 +74,12 @@ export class MarketService {
       userId: to,
       nestId: null,
       is_for_sale: false,
+    })
+
+    this.appEvent.handleMoneyTransfer({
+      userId: egg.userId,
+      currency: egg.currency,
+      amount: egg.price,
     })
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { AddMessageDto, SendMessageDto } from './types/addMessageDto'
-import { AppGateway } from 'src/socket/gateways/app'
+import { AppGateway } from 'src/socket/gateways/app/app'
 import { Message } from '@prisma/client'
 import { chatRoomSelection } from './chat.selection'
 
@@ -129,7 +129,14 @@ export class ChatService {
             UserChatRoom: {
               where: { userId: { not: userId } },
               select: {
-                user: { select: { id: true, game_id: true, avatar: true } },
+                user: {
+                  select: {
+                    id: true,
+                    game_id: true,
+                    avatar: true,
+                    displayName: true,
+                  },
+                },
               },
             },
             messages: {

@@ -57,6 +57,7 @@ export class UserService {
         game_id: dto.game_id,
         bio: dto.bio,
         avatar: dto.avatar,
+        displayName: dto.displayName,
       },
     })
   }
