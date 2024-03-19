@@ -129,7 +129,14 @@ export class ChatService {
             UserChatRoom: {
               where: { userId: { not: userId } },
               select: {
-                user: { select: { id: true, game_id: true, avatar: true } },
+                user: {
+                  select: {
+                    id: true,
+                    game_id: true,
+                    avatar: true,
+                    displayName: true,
+                  },
+                },
               },
             },
             messages: {
