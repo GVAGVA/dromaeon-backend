@@ -171,3 +171,9 @@ model AdminSetting {
   maxEggs        Int    @default(100)
   pickupCooldown Int    @default(3600)
 }
+
+model Faq {
+  id       String @id @default(uuid())
+  question String
+  answer   String
+}

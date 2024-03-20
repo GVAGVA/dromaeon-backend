@@ -14,6 +14,7 @@ import { InventoryModule } from './inventory/inventory.module'
 import { MarketModule } from './market/market.module'
 import { SocketModule } from './socket/socket.module';
 import { ExploreModule } from './explore/explore.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ExploreModule } from './explore/explore.module';
     MarketModule,
     SocketModule,
     ExploreModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
