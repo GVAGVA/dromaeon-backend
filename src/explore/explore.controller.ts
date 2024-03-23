@@ -89,4 +89,9 @@ export class ExploreController {
         throw new InternalServerErrorException(err.message)
       })
   }
+
+  @Get('clear-map')
+  async clearExploreMap() {
+    return this.exploreService.clearMap()
+  }
 }

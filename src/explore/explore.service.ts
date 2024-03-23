@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { UpdateAdminSettingDto } from './dto/updateAdminSetting.dto'
 import { Observable, Subject } from 'rxjs'
 import { ExploreEventDto } from './dto/exploreEvent.dto'
-import { Egg } from '@prisma/client'
 import { UploadService } from 'src/upload/upload.service'
 import { CreateEggDto } from './dto/createEggDto'
+import { promises as fsPromises } from 'fs'
 
 @Injectable()
 export class ExploreService {
@@ -65,9 +65,41 @@ export class ExploreService {
       data: { lifetime_collected: { increment: 1 } },
     })
 
-    return await this.prisma.egg.update({
-      where: { id: eggId },
-      data: { userId, nestId },
-    })
+    try {
+      await this.removeEggImage(eggId)
+      return await this.prisma.egg.update({
+        where: { id: eggId },
+        data: { userId, nestId },
+      })
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  async removeEggImage(eggId: string) {
+    try {
+      await fsPromises.unlink(`files/eggs/${eggId}.png`)
+    } catch (error) {
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  async clearMap() {
+    const folderPath = 'files/eggs'
+
+    await this.prisma.egg.deleteMany({ where: { owner: null } })
+    try {
+      const files = await fsPromises.readdir(folderPath)
+
+      for (const file of files) {
+        const filePath = `${folderPath}/${file}`
+        await fsPromises.unlink(filePath)
+      }
+
+      console.log(`Successfully emptied the folder: ${folderPath}`)
+    } catch (error) {
+      // Handle possible errors, such as folder not found or permissions issue
+      throw new Error(`Error emptying folder: ${error.message}`)
+    }
   }
 }
