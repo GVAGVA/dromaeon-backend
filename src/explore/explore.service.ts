@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service'
 import { UpdateAdminSettingDto } from './dto/updateAdminSetting.dto'
 import { Observable, Subject } from 'rxjs'
 import { ExploreEventDto } from './dto/exploreEvent.dto'
+import { Egg } from '@prisma/client'
 import { UploadService } from 'src/upload/upload.service'
 import { CreateEggDto } from './dto/createEggDto'
 
