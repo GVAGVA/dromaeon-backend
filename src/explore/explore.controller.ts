@@ -1,20 +1,21 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   InternalServerErrorException,
-  Param,
   Post,
   Request,
   Sse,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common'
 import { ExploreService } from './explore.service'
 import { Observable, map } from 'rxjs'
-import { Egg } from '@prisma/client'
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard'
 import { UpdateAdminSettingDto } from './dto/updateAdminSetting.dto'
+import { CreateEggDto } from './dto/createEggDto'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @Controller('explore')
 export class ExploreController {
@@ -29,10 +30,16 @@ export class ExploreController {
   }
 
   // create bulk eggs
-  @Post('bulk')
-  async createEggs(@Body() dto: Egg[]) {
+  @Post('egg')
+  @UseInterceptors(FileInterceptor('file'))
+  async createEggs(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() dto: CreateEggDto,
+  ) {
+    console.log(file, dto)
+
     return await this.exploreService
-      .createEggs(dto)
+      .createEgg(dto, file)
       .then((eggs) => eggs)
       .catch((err) => {
         throw new InternalServerErrorException(err.message)

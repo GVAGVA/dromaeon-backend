@@ -4,10 +4,15 @@ import { UpdateAdminSettingDto } from './dto/updateAdminSetting.dto'
 import { Observable, Subject } from 'rxjs'
 import { ExploreEventDto } from './dto/exploreEvent.dto'
 import { Egg } from '@prisma/client'
+import { UploadService } from 'src/upload/upload.service'
+import { CreateEggDto } from './dto/createEggDto'
 
 @Injectable()
 export class ExploreService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   private readonly exploreEvents = new Subject<ExploreEventDto>()
 
@@ -34,17 +39,20 @@ export class ExploreService {
     })
   }
 
-  // create eggs on the map
-  async createEggs(eggs: Egg[]) {
-    const { count } = await this.prisma.egg.createMany({
-      data: eggs,
+  // create an egg on the map
+  async createEgg(dto: CreateEggDto, image: Express.Multer.File) {
+    const egg = await this.prisma.egg.create({
+      data: {
+        x: dto.x,
+        y: dto.y,
+        rotate: dto.rotate,
+        color: dto.color,
+        pattern: dto.pattern,
+      },
     })
-    const data = await this.prisma.egg.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: count,
-    })
+    this.uploadService.uploadEggImage(image, egg.id)
 
-    this.sendEvent({ type: 'BULK', data })
+    return egg
   }
 
   async getEggsUncovered() {

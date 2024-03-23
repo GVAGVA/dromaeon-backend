@@ -12,9 +12,10 @@ import { ConfigModule } from '@nestjs/config'
 import { CurrencyModule } from './currency/currency.module'
 import { InventoryModule } from './inventory/inventory.module'
 import { MarketModule } from './market/market.module'
-import { SocketModule } from './socket/socket.module';
-import { ExploreModule } from './explore/explore.module';
-import { AdminModule } from './admin/admin.module';
+import { SocketModule } from './socket/socket.module'
+import { ExploreModule } from './explore/explore.module'
+import { AdminModule } from './admin/admin.module'
+import { UploadModule } from './upload/upload.module'
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AdminModule } from './admin/admin.module';
     SocketModule,
     ExploreModule,
     AdminModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
