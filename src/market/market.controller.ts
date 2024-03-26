@@ -57,6 +57,12 @@ export class MarketController {
       })
   }
 
+  // take an egg off from the market
+  @Get('remove/:id')
+  async removeEggFromMarket(@Param('id') id: string) {
+    return await this.marketService.removeEggFromMarket(id)
+  }
+
   // handle market events
   @Sse('/market-events')
   sse(): Observable<any> {
