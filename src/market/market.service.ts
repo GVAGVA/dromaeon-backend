@@ -41,8 +41,6 @@ export class MarketService {
 
   // add egg to market
   async takeEggToMarket(eggId: string, currency: Currency, price: number) {
-    console.log('called!!!')
-
     const egg = await this.prisma.egg.update({
       where: { id: eggId },
       data: {
@@ -56,6 +54,19 @@ export class MarketService {
     this.sendEvent({ type: 'ADDED', data: { egg } })
 
     return egg
+  }
+
+  // remove egg from market
+  async removeEggFromMarket(eggId: string) {
+    const updated = await this.prisma.egg.update({
+      where: { id: eggId },
+      data: { is_for_sale: false },
+    })
+
+    // send remove event to market
+    this.sendEvent({ type: 'PURCHASED', data: { egg: updated } })
+
+    return updated
   }
 
   // make egg transaction
